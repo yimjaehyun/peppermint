@@ -55,6 +55,7 @@ app.use(express.json());
 
 // Use Routes
 app.use("/api/users", require("./routes/users"));
+app.use("/api/auth", require("./routes/auth"));
 
 app.get("/", function(request, response, next) {
     response.render("index.ejs", {
