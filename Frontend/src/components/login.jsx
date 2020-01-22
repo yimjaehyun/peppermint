@@ -1,56 +1,61 @@
 import React, { Component } from "react";
+import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 
-class Login extends Component {
-    state = {
-        username: "",
-        password: ""
+export default function Login() {
+    const [open, setOpen] = React.useState(false);
+
+    const handleClickOpen = () => {
+        setOpen(true);
     };
 
-    loginHandler() {
-        const response = fetch("/login", {
-            method: "POST",
-            body: {
-                username: this.state.username,
-                password: this.state.password
-            }
-        });
-    }
-
-    render() {
-        const { email, password } = this.state;
-        return (
-            <form onSubmit={this.handleSubmit}>
-                <label htmlFor="email">Email</label>
-                <input
-                    name="email"
-                    type="text"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={this.handleChange}
-                />
-                <label htmlFor="email">Password</label>
-                <input
-                    name="password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={this.handleChange}
-                />
-                <button type="submit">Login</button>
-            </form>
-        );
-    }
-
-    handleChange = event => {
-        this.setState({
-            [event.target.name]: event.target.value
-        });
+    const handleClose = () => {
+        setOpen(false);
     };
 
-    handleSubmit = event => {
-        console.log("Submitting");
-        console.log(this.state);
-    };
+    return (
+        <div>
+            <Button
+                variant="outlined"
+                color="primary"
+                onClick={handleClickOpen}
+            >
+                Open form dialog
+            </Button>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="form-dialog-title"
+            >
+                <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        To subscribe to this website, please enter your email
+                        address here. We will send updates occasionally.
+                    </DialogContentText>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Email Address"
+                        type="email"
+                        fullWidth
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleClose} color="primary">
+                        Subscribe
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </div>
+    );
 }
-
-export default Login;

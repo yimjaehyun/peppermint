@@ -3,12 +3,7 @@ import PlaidLink from "./components/plaidLink";
 import Login from "./components/login";
 
 function App() {
-  return (
-    <Fragment>
-      <PlaidLink />
-      <Login />
-    </Fragment>
-  );
+    return <Login />;
 }
 
 export default App;
