@@ -45,14 +45,6 @@ export default function Login() {
             });
     };
 
-    const handleEmailChange = e => {
-        setEmail(e.target.value);
-    };
-
-    const handlePasswordChange = e => {
-        setPassword(e.target.value);
-    };
-
     return (
         <div>
             <Button
@@ -76,7 +68,7 @@ export default function Login() {
                         label="Email Address"
                         type="email"
                         fullWidth
-                        onChange={handleEmailChange}
+                        onChange={e => setEmail(e.target.value)}
                         error={error.isError}
                         helperText={error.isError ? error.msg : ""}
                     />
@@ -87,7 +79,7 @@ export default function Login() {
                         label="Password"
                         type="password"
                         fullWidth
-                        onChange={handlePasswordChange}
+                        onChange={e => setPassword(e.target.value)}
                         error={error.isError}
                         helperText={error.isError ? error.msg : ""}
                     />
