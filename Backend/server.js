@@ -7,6 +7,7 @@ require("dotenv").config();
 const express = require("express");
 const moment = require("moment");
 const plaid = require("plaid");
+const cors = require("cors");
 
 const mongoose = require("mongoose");
 
@@ -52,6 +53,7 @@ var client = new plaid.Client(
 var app = express();
 
 app.use(express.json());
+app.use(cors());
 
 // Use Routes
 app.use("/api/users", require("./routes/users"));

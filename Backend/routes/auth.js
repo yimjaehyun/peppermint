@@ -11,7 +11,6 @@ const User = require("../models/user");
 
 router.post("/login", (req, res) => {
     const { email, password } = req.body;
-    console.log(email, password);
 
     // Simple validation
     if (!email || !password) {
