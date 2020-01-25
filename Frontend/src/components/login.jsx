@@ -6,9 +6,16 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import { FormHelperText } from "@material-ui/core";
 
 export default function Login() {
     const [open, setOpen] = React.useState(false);
+    const [email, setEmail] = React.useState("");
+    const [password, setPassword] = React.useState("");
+    const [error, setError] = React.useState({
+        isError: false,
+        msg: ""
+    });
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -18,6 +25,34 @@ export default function Login() {
         setOpen(false);
     };
 
+    const handleSubmit = () => {
+        fetch("/api/auth/login/", {
+            method: "post",
+            mode: "cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: email, password: password })
+        })
+            .then(function(res) {
+                return res.json();
+            })
+            .then(function(data) {
+                console.log(data);
+                if (data.msg) {
+                    setError({ isError: true, msg: data.msg });
+                } else {
+                    setError({ isError: false, msg: "" });
+                }
+            });
+    };
+
+    const handleEmailChange = e => {
+        setEmail(e.target.value);
+    };
+
+    const handlePasswordChange = e => {
+        setPassword(e.target.value);
+    };
+
     return (
         <div>
             <Button
@@ -25,34 +60,44 @@ export default function Login() {
                 color="primary"
                 onClick={handleClickOpen}
             >
-                Open form dialog
+                Login
             </Button>
             <Dialog
                 open={open}
                 onClose={handleClose}
-                aria-labelledby="form-dialog-title"
+                aria-labelledby="login-form-dialog-title"
             >
-                <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+                <DialogTitle id="login-form-dialog-title">Login</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        To subscribe to this website, please enter your email
-                        address here. We will send updates occasionally.
-                    </DialogContentText>
                     <TextField
                         autoFocus
                         margin="dense"
-                        id="name"
+                        id="email"
                         label="Email Address"
                         type="email"
                         fullWidth
+                        onChange={handleEmailChange}
+                        error={error.isError}
+                        helperText={error.isError ? error.msg : ""}
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="password"
+                        label="Password"
+                        type="password"
+                        fullWidth
+                        onChange={handlePasswordChange}
+                        error={error.isError}
+                        helperText={error.isError ? error.msg : ""}
                     />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={handleClose} color="primary">
-                        Subscribe
+                    <Button onClick={handleSubmit} color="primary">
+                        Submit
                     </Button>
                 </DialogActions>
             </Dialog>
