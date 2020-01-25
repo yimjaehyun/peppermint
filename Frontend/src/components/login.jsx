@@ -23,6 +23,8 @@ export default function Login() {
 
     const handleClose = () => {
         setOpen(false);
+        // To reset error on Cancel
+        setError({ isError: false, msg: "" });
     };
 
     const handleSubmit = () => {
