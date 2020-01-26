@@ -4,11 +4,10 @@ import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { FormHelperText } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 
-export default function Login() {
+export default function Login({ setToken }) {
     const [open, setOpen] = React.useState(false);
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
@@ -16,6 +15,7 @@ export default function Login() {
         isError: false,
         msg: ""
     });
+    let history = useHistory();
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -48,6 +48,10 @@ export default function Login() {
                     setError({ isError: true, msg: data.msg });
                 } else {
                     setError({ isError: false, msg: "" });
+                    //calls setToken from parent
+                    setToken(data.token);
+                    // Redirect to protected dashboard page
+                    history.push("/dashboard");
                 }
             });
     };
