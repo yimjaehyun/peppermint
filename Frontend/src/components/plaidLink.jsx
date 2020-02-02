@@ -1,23 +1,44 @@
 import React, { Component } from "react";
-import $ from "jquery";
 import { useEffect } from "react";
 
-export default function PlaidLink() {
+// Need to pass in userId to post and {user and setUser} to update accounts
+// components
+export default function PlaidLink({ user, setUser }) {
     const linkHandler = () => {
         var handler = window.Plaid.create({
-            clientName: "Plaid Quickstart",
-            countryCodes: ["US"],
-            env: "sandbox",
+            clientName: "Peppermint",
+            env: process.env.REACT_APP_PLAID_ENV,
             key: process.env.REACT_APP_PUBLIC_KEY,
             product: ["transactions"],
-            language: "en",
+            onLoad: function() {
+                // Optional, called when Link loads
+            },
             onSuccess: function(public_token, metadata) {
                 // Send the public_token to your app server.
                 // The metadata object contains info about the institution the
                 // user selected and the account ID or IDs, if the
                 // Select Account view is enabled.
-                $.post("/api/plaid/get_access_token", {
-                    public_token: public_token
+                fetch("/api/plaid/get_access_token/", {
+                    method: "post",
+                    mode: "cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        userId: user.id,
+                        public_token: public_token
+                    })
+                }).then(response => {
+                    response.json().then(function(data) {
+                        setUser({
+                            ...user,
+                            accounts: [
+                                ...user.accounts,
+                                {
+                                    itemId: data.item_id,
+                                    accessToken: data.access_token
+                                }
+                            ]
+                        });
+                    });
                 });
             },
             onExit: function(err, metadata) {
@@ -42,6 +63,7 @@ export default function PlaidLink() {
                 // }
             }
         });
+
         handler.open();
     };
 
