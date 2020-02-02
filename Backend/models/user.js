@@ -13,6 +13,10 @@ const UserSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    accounts: {
+        type: Array,
+        default: [{ itemId: String, accessToken: String }]
+    },
     register_date: {
         type: Date,
         default: Date.now
