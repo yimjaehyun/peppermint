@@ -1,6 +1,6 @@
 import React from "react";
-import DateFilter from "../components/dateFilter";
 import PlaidLink from "../components/plaidLink";
+import DateFilter from "../components/dateFilter";
 import AppMenuBar from "../components/appBar";
 import AccountFilter from "../components/accountFilter";
 import { useEffect } from "react";
@@ -10,9 +10,11 @@ export default function Dashboard({ token }) {
         id: "",
         name: "",
         email: "",
-        register_date: ""
+        register_date: "",
+        accounts: []
     });
 
+    // Swap out jwt token for user
     useEffect(() => {
         fetch("/api/auth/user/", {
             method: "get",
@@ -25,12 +27,12 @@ export default function Dashboard({ token }) {
                 return res.json();
             })
             .then(function(data) {
-                console.log(data);
                 setUser({
                     id: data._id,
                     name: data.name,
                     email: data.email,
-                    register_date: data.register_date
+                    register_date: data.register_date,
+                    accounts: data.accounts
                 });
             });
     }, []);
@@ -38,15 +40,9 @@ export default function Dashboard({ token }) {
     return (
         <span>
             <AppMenuBar user={user} />
-            <PlaidLink />
+            <PlaidLink user={user} setUser={setUser} />
             <DateFilter />
-            <AccountFilter
-                accountList={
-                    [
-                        /*TODO post and get user transactions*/
-                    ]
-                }
-            />
+            <AccountFilter accountList={user.accounts} />
         </span>
     );
 }
