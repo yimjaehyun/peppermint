@@ -13,12 +13,6 @@ const PLAID_ENV = process.env.ENV;
 var PLAID_PRODUCTS = ["transactions"];
 var PLAID_COUNTRY_CODES = ["US"];
 
-// We store the access_token in memory - in production, store it in a secure
-// persistent data store
-var ACCESS_TOKEN = null;
-var PUBLIC_TOKEN = null;
-var ITEM_ID = null;
-
 // Initialize the Plaid client
 // Find your API keys in the Dashboard (https://dashboard.plaid.com/account/keys)
 var client = new plaid.Client(
@@ -33,23 +27,38 @@ var client = new plaid.Client(
 // an API access_token
 // https://plaid.com/docs/#exchange-token-flow
 router.post("/get_access_token", function(request, response, next) {
-    PUBLIC_TOKEN = request.body.public_token;
-    client.exchangePublicToken(PUBLIC_TOKEN, function(error, tokenResponse) {
+    client.exchangePublicToken(request.body.public_token, function(
+        error,
+        tokenResponse
+    ) {
         if (error != null) {
-            prettyPrintResponse(error);
             return response.json({
                 error: error
             });
         }
-        ACCESS_TOKEN = tokenResponse.access_token;
-        ITEM_ID = tokenResponse.item_id;
+        var ACCESS_TOKEN = tokenResponse.access_token;
+        var ITEM_ID = tokenResponse.item_id;
 
-        prettyPrintResponse(tokenResponse);
-        response.json({
-            access_token: ACCESS_TOKEN,
-            item_id: ITEM_ID,
-            error: null
-        });
+        User.findOneAndUpdate(
+            { _id: request.body.userId },
+            {
+                $push: {
+                    accounts: { itemId: ITEM_ID, accessToken: ACCESS_TOKEN }
+                }
+            },
+            { useFindAndModify: false }
+        ).then(
+            user => {
+                response.json({
+                    access_token: ACCESS_TOKEN,
+                    item_id: ITEM_ID,
+                    error: null
+                });
+            },
+            err => {
+                console.log(err);
+            }
+        );
     });
 });
 
@@ -71,12 +80,12 @@ router.get("/transactions", function(request, response, next) {
         },
         function(error, transactionsResponse) {
             if (error != null) {
-                prettyPrintResponse(error);
+                console.log(error);
                 return response.json({
                     error: error
                 });
             } else {
-                prettyPrintResponse(transactionsResponse);
+                console.log(transactionsResponse);
                 response.json({
                     error: null,
                     transactions: transactionsResponse
@@ -91,12 +100,12 @@ router.get("/transactions", function(request, response, next) {
 router.get("/identity", function(request, response, next) {
     client.getIdentity(ACCESS_TOKEN, function(error, identityResponse) {
         if (error != null) {
-            prettyPrintResponse(error);
+            console.log(error);
             return response.json({
                 error: error
             });
         }
-        prettyPrintResponse(identityResponse);
+        console.log(identityResponse);
         response.json({ error: null, identity: identityResponse });
     });
 });
@@ -106,12 +115,12 @@ router.get("/identity", function(request, response, next) {
 router.get("/balance", function(request, response, next) {
     client.getBalance(ACCESS_TOKEN, function(error, balanceResponse) {
         if (error != null) {
-            prettyPrintResponse(error);
+            console.log(error);
             return response.json({
                 error: error
             });
         }
-        prettyPrintResponse(balanceResponse);
+        console.log(balanceResponse);
         response.json({ error: null, balance: balanceResponse });
     });
 });
@@ -121,12 +130,12 @@ router.get("/balance", function(request, response, next) {
 router.get("/accounts", function(request, response, next) {
     client.getAccounts(ACCESS_TOKEN, function(error, accountsResponse) {
         if (error != null) {
-            prettyPrintResponse(error);
+            console.log(error);
             return response.json({
                 error: error
             });
         }
-        prettyPrintResponse(accountsResponse);
+        console.log(accountsResponse);
         response.json({ error: null, accounts: accountsResponse });
     });
 });
@@ -136,12 +145,12 @@ router.get("/accounts", function(request, response, next) {
 router.get("/auth", function(request, response, next) {
     client.getAuth(ACCESS_TOKEN, function(error, authResponse) {
         if (error != null) {
-            prettyPrintResponse(error);
+            console.log(error);
             return response.json({
                 error: error
             });
         }
-        prettyPrintResponse(authResponse);
+        console.log(authResponse);
         response.json({ error: null, auth: authResponse });
     });
 });
@@ -151,12 +160,12 @@ router.get("/auth", function(request, response, next) {
 router.get("/holdings", function(request, response, next) {
     client.getHoldings(ACCESS_TOKEN, function(error, holdingsResponse) {
         if (error != null) {
-            prettyPrintResponse(error);
+            console.log(error);
             return response.json({
                 error: error
             });
         }
-        prettyPrintResponse(holdingsResponse);
+        console.log(holdingsResponse);
         response.json({ error: null, holdings: holdingsResponse });
     });
 });
@@ -173,12 +182,12 @@ router.get("/investment_transactions", function(request, response, next) {
         investmentTransactionsResponse
     ) {
         if (error != null) {
-            prettyPrintResponse(error);
+            console.log(error);
             return response.json({
                 error: error
             });
         }
-        prettyPrintResponse(investmentTransactionsResponse);
+        console.log(investmentTransactionsResponse);
         response.json({
             error: null,
             investment_transactions: investmentTransactionsResponse
@@ -216,12 +225,12 @@ router.get("/assets", function(request, response, next) {
         assetReportCreateResponse
     ) {
         if (error != null) {
-            prettyPrintResponse(error);
+            console.log(error);
             return response.json({
                 error: error
             });
         }
-        prettyPrintResponse(assetReportCreateResponse);
+        console.log(assetReportCreateResponse);
 
         var assetReportToken = assetReportCreateResponse.asset_report_token;
         respondWithAssetReport(20, assetReportToken, client, response);
@@ -235,7 +244,7 @@ router.get("/item", function(request, response, next) {
     // billed products, webhook information, and more.
     client.getItem(ACCESS_TOKEN, function(error, itemResponse) {
         if (error != null) {
-            prettyPrintResponse(error);
+            console.log(error);
             return response.json({
                 error: error
             });
@@ -253,7 +262,7 @@ router.get("/item", function(request, response, next) {
                     error: msg
                 });
             } else {
-                prettyPrintResponse(itemResponse);
+                console.log(itemResponse);
                 response.json({
                     item: itemResponse.item,
                     institution: instRes.institution
@@ -285,7 +294,7 @@ var respondWithAssetReport = (
         assetReportGetResponse
     ) {
         if (error != null) {
-            prettyPrintResponse(error);
+            console.log(error);
             if (error.error_code == "PRODUCT_NOT_READY") {
                 setTimeout(
                     () =>
@@ -333,9 +342,5 @@ router.post("/set_access_token", function(request, response, next) {
         });
     });
 });
-
-var prettyPrintResponse = response => {
-    console.log(util.inspect(response, { colors: true, depth: 4 }));
-};
 
 module.exports = router;
