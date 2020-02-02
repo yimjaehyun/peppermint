@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function AccountFilter({ accountList }) {
+export default function AccountFilter(accountList) {
     const classes = useStyles();
     const [accountFilter, setAccountFilter] = React.useState("All");
 
@@ -26,6 +26,7 @@ export default function AccountFilter({ accountList }) {
 
     return (
         <div>
+            {console.log(accountList)}
             <FormControl className={classes.formControl}>
                 <InputLabel id="account-filter">Account</InputLabel>
                 <Select
@@ -34,8 +35,10 @@ export default function AccountFilter({ accountList }) {
                     onChange={handleChange}
                 >
                     <MenuItem value="All">All</MenuItem>
-                    {accountList.map(d => (
-                        <MenuItem value={d.name}>{d.name}</MenuItem>
+                    {accountList.accountList.map(d => (
+                        <MenuItem key={d.itemId} value={d.itemId}>
+                            {d.itemId}
+                        </MenuItem>
                     ))}
                 </Select>
             </FormControl>
