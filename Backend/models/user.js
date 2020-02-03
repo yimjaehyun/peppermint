@@ -15,7 +15,7 @@ const UserSchema = mongoose.Schema({
     },
     accounts: {
         type: Array,
-        default: [{ itemId: String, accessToken: String }]
+        default: [{ accessToken: String, metadata: Object }]
     },
     register_date: {
         type: Date,

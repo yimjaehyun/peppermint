@@ -24,7 +24,8 @@ export default function PlaidLink({ user, setUser }) {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         userId: user.id,
-                        public_token: public_token
+                        public_token: public_token,
+                        metadata: metadata
                     })
                 }).then(response => {
                     response.json().then(function(data) {
@@ -33,8 +34,8 @@ export default function PlaidLink({ user, setUser }) {
                             accounts: [
                                 ...user.accounts,
                                 {
-                                    itemId: data.item_id,
-                                    accessToken: data.access_token
+                                    accessToken: data.access_token,
+                                    metadata: metadata
                                 }
                             ]
                         });

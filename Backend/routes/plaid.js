@@ -43,7 +43,11 @@ router.post("/get_access_token", function(request, response, next) {
             { _id: request.body.userId },
             {
                 $push: {
-                    accounts: { itemId: ITEM_ID, accessToken: ACCESS_TOKEN }
+                    accounts: {
+                        itemId: ITEM_ID,
+                        accessToken: ACCESS_TOKEN,
+                        metadata: request.body.metadata
+                    }
                 }
             },
             { useFindAndModify: false }
@@ -51,7 +55,6 @@ router.post("/get_access_token", function(request, response, next) {
             user => {
                 response.json({
                     access_token: ACCESS_TOKEN,
-                    item_id: ITEM_ID,
                     error: null
                 });
             },

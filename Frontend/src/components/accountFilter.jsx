@@ -35,11 +35,25 @@ export default function AccountFilter(accountList) {
                     onChange={handleChange}
                 >
                     <MenuItem value="All">All</MenuItem>
-                    {accountList.accountList.map(d => (
-                        <MenuItem key={d.itemId} value={d.itemId}>
-                            {d.itemId}
-                        </MenuItem>
-                    ))}
+                    {accountList.accountList.length > 0 &&
+                        accountList.accountList.map(d =>
+                            d.metadata.accounts.map(a => (
+                                <MenuItem
+                                    key={
+                                        d.metadata.institution.name +
+                                        " " +
+                                        a.name
+                                    }
+                                    value={
+                                        d.metadata.institution.name +
+                                        " " +
+                                        a.name
+                                    }
+                                >
+                                    {d.metadata.institution.name + " " + a.name}
+                                </MenuItem>
+                            ))
+                        )}
                 </Select>
             </FormControl>
         </div>
