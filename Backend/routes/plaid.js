@@ -74,7 +74,7 @@ router.get("/transactions", function(request, response, next) {
         .format("YYYY-MM-DD");
     var endDate = moment().format("YYYY-MM-DD");
     client.getTransactions(
-        ACCESS_TOKEN,
+        request.header("Access-Token"),
         startDate,
         endDate,
         {
