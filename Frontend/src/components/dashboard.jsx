@@ -22,9 +22,9 @@ export default function Dashboard({ token }) {
         account: "All"
     });
 
+    // transactions -> categorizedTransactions -> formattedTransactions
     // Array of plaid transaction objects
     const [transactions, setTransactions] = React.useState([]);
-
     // a dictionary of key: category name and value: [transactions]
     const [
         categorizedTransactions,
@@ -57,7 +57,7 @@ export default function Dashboard({ token }) {
             });
     }, []);
 
-    // Fetch plaid transactions api and load transaction state
+    // Fetch plaid transactions api and load transactions state
     useEffect(() => {
         if (user.accounts.length != 0) {
             user.accounts.forEach(a => {
@@ -80,7 +80,7 @@ export default function Dashboard({ token }) {
         }
     }, [user.accounts]);
 
-    // Fetch plaid transactions api and load transaction state
+    // Fetch plaid transactions api and load categorizedTransactions state
     useEffect(() => {
         const sortByCategory = transactionsArray => {
             var sortedDict = {};
