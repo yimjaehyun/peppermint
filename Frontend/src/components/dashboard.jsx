@@ -21,6 +21,10 @@ export default function Dashboard({ token }) {
         date: "Month",
         account: "All"
     });
+
+    // Array of plaid transaction objects
+    const [transactions, setTransactions] = React.useState([]);
+
     // a dictionary of key: category name and value: [transactions]
     const [
         categorizedTransactions,
@@ -55,6 +59,29 @@ export default function Dashboard({ token }) {
 
     // Fetch plaid transactions api and load transaction state
     useEffect(() => {
+        if (user.accounts.length != 0) {
+            user.accounts.forEach(a => {
+                fetch("/api/plaid/transactions/", {
+                    method: "get",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Access-Token": a.accessToken
+                    }
+                })
+                    .then(function(res) {
+                        return res.json();
+                    })
+                    .then(function(data) {
+                        setTransactions(prevState =>
+                            prevState.concat(data.transactions.transactions)
+                        );
+                    });
+            });
+        }
+    }, [user.accounts]);
+
+    // Fetch plaid transactions api and load transaction state
+    useEffect(() => {
         const sortByCategory = transactionsArray => {
             var sortedDict = {};
             transactionsArray.forEach(transaction => {
@@ -69,26 +96,8 @@ export default function Dashboard({ token }) {
             return sortedDict;
         };
 
-        if (user.accounts.length != 0) {
-            user.accounts.forEach(a => {
-                fetch("/api/plaid/transactions/", {
-                    method: "get",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Access-Token": a.accessToken
-                    }
-                })
-                    .then(function(res) {
-                        return res.json();
-                    })
-                    .then(function(data) {
-                        setCategorizedTransactions(
-                            sortByCategory(data.transactions.transactions)
-                        );
-                    });
-            });
-        }
-    }, [user.accounts]);
+        setCategorizedTransactions(sortByCategory(transactions));
+    }, [transactions]);
 
     // Filter transaction array and format transactions
     // TODO: it just returns the transactions doesn't filter yet
@@ -110,7 +119,7 @@ export default function Dashboard({ token }) {
             setFormattedTransactions(
                 format(filter(currentFilter, categorizedTransactions))
             );
-    }, [currentFilter]);
+    }, [currentFilter, categorizedTransactions]);
 
     return (
         <Fragment>
