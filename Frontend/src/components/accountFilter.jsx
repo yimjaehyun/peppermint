@@ -16,27 +16,29 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function AccountFilter(accountList) {
+export default function AccountFilter(props) {
     const classes = useStyles();
-    const [accountFilter, setAccountFilter] = React.useState("All");
 
     const handleChange = event => {
-        setAccountFilter(event.target.value);
+        props.setCurrentFilter(prevState => ({
+            ...prevState,
+            account: event.target.value
+        }));
     };
 
     return (
         <div>
-            {console.log(accountList)}
+            {console.log(props.accountList)}
             <FormControl className={classes.formControl}>
                 <InputLabel id="account-filter">Account</InputLabel>
                 <Select
                     labelId="account-filter-label"
-                    value={accountFilter}
+                    value={props.currentFilter.account}
                     onChange={handleChange}
                 >
                     <MenuItem value="All">All</MenuItem>
-                    {accountList.accountList.length > 0 &&
-                        accountList.accountList.map(d =>
+                    {props.accountList.length > 0 &&
+                        props.accountList.map(d =>
                             d.metadata.accounts.map(a => (
                                 <MenuItem
                                     key={

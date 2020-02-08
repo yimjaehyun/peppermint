@@ -16,12 +16,13 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function DateFilter() {
+export default function DateFilter(props) {
     const classes = useStyles();
-    const [dateFilter, setDateFilter] = React.useState("Month");
-
     const handleChange = event => {
-        setDateFilter(event.target.value);
+        props.setCurrentFilter(prevState => ({
+            ...prevState,
+            date: event.target.value
+        }));
     };
 
     return (
@@ -30,7 +31,7 @@ export default function DateFilter() {
                 <InputLabel id="date-filter">Date</InputLabel>
                 <Select
                     labelId="date-filter-label"
-                    value={dateFilter}
+                    value={props.currentFilter.date}
                     onChange={handleChange}
                 >
                     <MenuItem value="Day">Day</MenuItem>
