@@ -19,10 +19,10 @@ const useStyles = makeStyles(theme => ({
 export default function AccountFilter(props) {
     const classes = useStyles();
 
-    const handleChange = event => {
+    const handleChange = (event, key) => {
         props.setCurrentFilter(prevState => ({
             ...prevState,
-            account: event.target.value
+            account: { id: key.key, name: event.target.value }
         }));
     };
 
@@ -33,7 +33,7 @@ export default function AccountFilter(props) {
                 <InputLabel id="account-filter">Account</InputLabel>
                 <Select
                     labelId="account-filter-label"
-                    value={props.currentFilter.account}
+                    value={props.currentFilter.account.name}
                     onChange={handleChange}
                 >
                     <MenuItem value="All">All</MenuItem>
@@ -41,11 +41,7 @@ export default function AccountFilter(props) {
                         props.accountList.map(d =>
                             d.metadata.accounts.map(a => (
                                 <MenuItem
-                                    key={
-                                        d.metadata.institution.name +
-                                        " " +
-                                        a.name
-                                    }
+                                    key={a.id}
                                     value={
                                         d.metadata.institution.name +
                                         " " +
