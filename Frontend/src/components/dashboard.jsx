@@ -5,6 +5,7 @@ import AppMenuBar from "../components/appBar";
 import AccountFilter from "../components/accountFilter";
 import Chart from "../components/charts";
 import { useEffect } from "react";
+import * as moment from "moment";
 
 import "../css/dashboard.css";
 import transitions from "@material-ui/core/styles/transitions";
@@ -83,15 +84,23 @@ export default function Dashboard({ token }) {
 
     // set filteredTransacitons state from transactions
     useEffect(() => {
-        console.log(currentFilter.account);
+        // Filter date
+        var filteredDateTransacitons = transactions.filter(t =>
+            moment(t.date).isSame(
+                moment.now(),
+                currentFilter.date.toLowerCase()
+            )
+        );
+
+        // Filter account id
         if (currentFilter.account.name != "All") {
             setFilteredTransactions(
-                transactions.filter(
+                filteredDateTransacitons.filter(
                     t => t.account_id == currentFilter.account.id
                 )
             );
         } else {
-            setFilteredTransactions(transactions);
+            setFilteredTransactions(filteredDateTransacitons);
         }
     }, [transactions, currentFilter]);
 
@@ -126,9 +135,8 @@ export default function Dashboard({ token }) {
             }
             return formattedArray;
         };
-        if (Object.keys(categorizedTransactions).length != 0)
-            setFormattedTransactions(format(categorizedTransactions));
-    }, [currentFilter, categorizedTransactions]);
+        setFormattedTransactions(format(categorizedTransactions));
+    }, [categorizedTransactions]);
 
     return (
         <Fragment>

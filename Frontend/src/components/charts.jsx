@@ -9,7 +9,7 @@ import {
 export default function Chart({ data }) {
     return (
         <svg viewBox="0 0 1000 350">
-            {/*console.log(data)*/}
+            {console.log(data)}
             <VictorySharedEvents
                 events={[
                     {
