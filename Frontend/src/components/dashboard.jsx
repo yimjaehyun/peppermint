@@ -19,12 +19,13 @@ export default function Dashboard({ token }) {
     });
     const [currentFilter, setCurrentFilter] = React.useState({
         date: "Month",
-        account: "All"
+        account: { id: null, name: "All" }
     });
 
-    // transactions -> categorizedTransactions -> formattedTransactions
+    // transactions -> filteredTransactions -> categorizedTransactions -> formattedTransactions
     // Array of plaid transaction objects
     const [transactions, setTransactions] = React.useState([]);
+    const [filteredTransactions, setFilteredTransactions] = React.useState([]);
     // a dictionary of key: category name and value: [transactions]
     const [
         categorizedTransactions,
@@ -80,7 +81,21 @@ export default function Dashboard({ token }) {
         }
     }, [user.accounts]);
 
-    // Fetch plaid transactions api and load categorizedTransactions state
+    // set filteredTransacitons state from transactions
+    useEffect(() => {
+        console.log(currentFilter.account);
+        if (currentFilter.account.name != "All") {
+            setFilteredTransactions(
+                transactions.filter(
+                    t => t.account_id == currentFilter.account.id
+                )
+            );
+        } else {
+            setFilteredTransactions(transactions);
+        }
+    }, [transactions, currentFilter]);
+
+    // set categorizedTransactions state from filteredTransactions
     useEffect(() => {
         const sortByCategory = transactionsArray => {
             var sortedDict = {};
@@ -96,15 +111,11 @@ export default function Dashboard({ token }) {
             return sortedDict;
         };
 
-        setCategorizedTransactions(sortByCategory(transactions));
-    }, [transactions]);
+        setCategorizedTransactions(sortByCategory(filteredTransactions));
+    }, [filteredTransactions]);
 
-    // Filter transaction array and format transactions
-    // TODO: it just returns the transactions doesn't filter yet
+    // format transactions and set FormattedTransactions
     useEffect(() => {
-        const filter = (currentFilter, dict) => {
-            return dict;
-        };
         const format = dict => {
             var formattedArray = [];
             for (var key in dict) {
@@ -116,9 +127,7 @@ export default function Dashboard({ token }) {
             return formattedArray;
         };
         if (Object.keys(categorizedTransactions).length != 0)
-            setFormattedTransactions(
-                format(filter(currentFilter, categorizedTransactions))
-            );
+            setFormattedTransactions(format(categorizedTransactions));
     }, [currentFilter, categorizedTransactions]);
 
     return (
