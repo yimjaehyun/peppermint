@@ -1,14 +1,13 @@
 import React, { Fragment } from "react";
+import { useEffect } from "react";
 import PlaidLink from "../components/plaidLink";
 import DateFilter from "../components/dateFilter";
 import AppMenuBar from "../components/appBar";
 import AccountFilter from "../components/accountFilter";
 import Chart from "../components/charts";
-import { useEffect } from "react";
+import ReactVirtualizedTable from "../components/transactionTable";
 import * as moment from "moment";
-
 import "../css/dashboard.css";
-import transitions from "@material-ui/core/styles/transitions";
 
 export default function Dashboard({ token }) {
     const [user, setUser] = React.useState({
@@ -23,7 +22,7 @@ export default function Dashboard({ token }) {
         account: { id: null, name: "All" }
     });
 
-    // transactions -> filteredTransactions -> categorizedTransactions -> formattedTransactions
+    // transactions -> filteredTransactions -> categorizedTransactions -> chartFormattedTransactions
     // Array of plaid transaction objects
     const [transactions, setTransactions] = React.useState([]);
     const [filteredTransactions, setFilteredTransactions] = React.useState([]);
@@ -32,9 +31,14 @@ export default function Dashboard({ token }) {
         categorizedTransactions,
         setCategorizedTransactions
     ] = React.useState({});
-    const [formattedTransactions, setFormattedTransactions] = React.useState(
-        []
-    );
+    const [
+        chartFormattedTransactions,
+        setChartFormattedTransactions
+    ] = React.useState([]);
+    const [
+        tableFormattedTransactions,
+        setTableFormattedTransactions
+    ] = React.useState([]);
 
     // Swap out jwt token for user
     useEffect(() => {
@@ -123,9 +127,9 @@ export default function Dashboard({ token }) {
         setCategorizedTransactions(sortByCategory(filteredTransactions));
     }, [filteredTransactions]);
 
-    // format transactions and set FormattedTransactions
+    // format transactions and set both FormattedTransactions
     useEffect(() => {
-        const format = dict => {
+        const formatChart = dict => {
             var formattedArray = [];
             for (var key in dict) {
                 var total = dict[key].reduce((a, b) => ({
@@ -135,7 +139,23 @@ export default function Dashboard({ token }) {
             }
             return formattedArray;
         };
-        setFormattedTransactions(format(categorizedTransactions));
+
+        const formatTable = arr => {
+            var formattedArray = [];
+            for (var i = 0; i < arr.length; i++) {
+                var transactionObj = arr[i];
+                formattedArray.push({
+                    id: i,
+                    transaction: transactionObj.name,
+                    amount: transactionObj.amount,
+                    category: transactionObj.category[0],
+                    date: transactionObj.date
+                });
+            }
+            return formattedArray;
+        };
+        setChartFormattedTransactions(formatChart(categorizedTransactions));
+        setTableFormattedTransactions(formatTable(filteredTransactions));
     }, [categorizedTransactions]);
 
     return (
@@ -152,10 +172,13 @@ export default function Dashboard({ token }) {
                     currentFilter={currentFilter}
                     setCurrentFilter={setCurrentFilter}
                 />
-
-                {formattedTransactions.length != 0 && (
-                    <Chart data={formattedTransactions} />
+                {chartFormattedTransactions.length != 0 ? (
+                    <Chart data={chartFormattedTransactions} />
+                ) : (
+                    <p>No transactions :( </p>
                 )}
+
+                <ReactVirtualizedTable data={tableFormattedTransactions} />
             </div>
         </Fragment>
     );
