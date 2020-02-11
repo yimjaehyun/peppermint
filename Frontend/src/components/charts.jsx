@@ -1,10 +1,28 @@
-import React, { Fragment } from "react";
+import React from "react";
 import {
     VictorySharedEvents,
     VictoryBar,
     VictoryLabel,
-    VictoryPie
+    VictoryPie,
+    VictoryTooltip
 } from "victory";
+
+class CustomLabel extends React.Component {
+    static defaultEvents = VictoryTooltip.defaultEvents;
+    render() {
+        return (
+            <g>
+                <VictoryLabel {...this.props} />
+                <VictoryTooltip
+                    {...this.props}
+                    text={this.props.datum.y}
+                    width={100}
+                    height={100}
+                />
+            </g>
+        );
+    }
+}
 
 export default function Chart({ data }) {
     return (
@@ -57,7 +75,7 @@ export default function Chart({ data }) {
                         }}
                         data={data}
                         labels={data.map(d => d.x)}
-                        labelComponent={<VictoryLabel y={290} />}
+                        labelComponent={<CustomLabel />}
                     />
                 </g>
                 <g transform={"translate(500, 21)"}>
