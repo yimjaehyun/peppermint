@@ -59,6 +59,9 @@ export default function Chart({ data }) {
                                         }
                                     }
                                 ];
+                            },
+                            onClick: (evt, clickedProps) => {
+                                console.log(clickedProps.datum);
                             }
                         }
                     }
@@ -78,7 +81,7 @@ export default function Chart({ data }) {
                         labelComponent={<CustomLabel />}
                     />
                 </g>
-                <g transform={"translate(500, 21)"}>
+                <g transform={"translate(570, 21)"}>
                     <VictoryPie
                         name="pie"
                         width={300}

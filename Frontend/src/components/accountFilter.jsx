@@ -28,7 +28,7 @@ export default function AccountFilter(props) {
 
     return (
         <div>
-            {/*console.log(props.accountList)*/}
+            {console.log(props.accountList)}
             <FormControl className={classes.formControl}>
                 <InputLabel id="account-filter">Account</InputLabel>
                 <Select

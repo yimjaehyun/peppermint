@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
-import PlaidLink from "./components/plaidLink";
 import Login from "./components/login";
+import SignUp from "./components/signUp";
 import Dashboard from "./components/dashboard";
 import {
     BrowserRouter as Router,
@@ -21,7 +21,12 @@ function App() {
                 <Route
                     path="/"
                     exact={true}
-                    render={() => <Login setToken={setToken} />}
+                    render={() => (
+                        <Fragment>
+                            <Login setToken={setToken} />
+                            <SignUp setToken={setToken} />
+                        </Fragment>
+                    )}
                 />
                 <Route path="/dashboard">
                     {console.log(token)}

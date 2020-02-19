@@ -24,7 +24,8 @@ router.post("/register", (req, res) => {
         const newUser = new User({
             name,
             email,
-            password
+            password,
+            accounts: []
         });
 
         // Create salt & hash
@@ -44,7 +45,8 @@ router.post("/register", (req, res) => {
                                 user: {
                                     id: user.id,
                                     name: user.name,
-                                    email: user.email
+                                    email: user.email,
+                                    accounts: []
                                 }
                             });
                         }
