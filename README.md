@@ -1,6 +1,8 @@
 # peppermint
 Mint alternative built using React, Material UI, Node, Express, MongoDB, Victory
 
+![](img/Capture.PNG)
+
 <h2> Prerequisites </h2>
 Add a .env file to your backend:
 
